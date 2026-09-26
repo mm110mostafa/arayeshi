@@ -22,18 +22,25 @@ export const MobileMenuDrawer: React.FC<MobileMenuDrawerProps> = ({
 }) => {
   const [expandedCategoryId, setExpandedCategoryId] = useState<string | null>(CATEGORIES[0].id);
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 lg:hidden overflow-hidden">
+    <div
+      className={`fixed inset-0 z-50 lg:hidden overflow-hidden transition-opacity duration-300 ease-out ${
+        isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+      }`}
+      aria-hidden={!isOpen}
+    >
       {/* Backdrop overlay */}
-      <div 
+      <div
         onClick={onClose}
-        className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity animate-fade-in"
+        className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs"
       />
 
-      {/* Right-sliding Drawer Content for Persian RTL */}
-      <div className="fixed inset-y-0 right-0 max-w-xs w-full bg-white shadow-2xl flex flex-col z-50 transform transition-transform ease-out duration-300 translate-x-0">
+      {/* Right-sliding Drawer Content for Persian RTL (slides out to the right when closing) */}
+      <div
+        className={`fixed inset-y-0 right-0 max-w-xs w-full bg-white shadow-2xl flex flex-col z-50 transform transition-transform ease-out duration-300 ${
+          isOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}
+      >
         
         {/* Drawer Header */}
         <div className="p-4 bg-gradient-to-r from-rose-600 to-pink-600 text-white flex items-center justify-between shadow-md">
