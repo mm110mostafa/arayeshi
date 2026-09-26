@@ -32,7 +32,7 @@ export const MobileMenuDrawer: React.FC<MobileMenuDrawerProps> = ({
       {/* Backdrop overlay */}
       <div
         onClick={onClose}
-        className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs"
+        className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs animate-overlay-in"
       />
 
       {/* Right-sliding Drawer Content for Persian RTL (slides out to the right when closing) */}
@@ -129,7 +129,7 @@ export const MobileMenuDrawer: React.FC<MobileMenuDrawerProps> = ({
                     </button>
 
                     {isExpanded && (
-                      <div className="bg-slate-50 border-t border-slate-100 p-2 space-y-1">
+                      <div className="bg-slate-50 border-t border-slate-100 p-2 space-y-1 animate-accordion">
                         <button
                           onClick={() => {
                             onSelectCategoryFilter(category.slug);

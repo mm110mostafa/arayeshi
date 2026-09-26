@@ -109,6 +109,34 @@ html {
   animation: fadeIn 0.3s ease-out;
 }
 
+/* Soft dropdown entrance: fade + slide down + subtle scale (menus, popovers) */
+@keyframes dropdownIn {
+  from { opacity: 0; transform: translateY(-8px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.animate-dropdown-in {
+  animation: dropdownIn 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  transform-origin: top center;
+}
+
+/* Soft scale entrance for centered modals & popups */
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.94) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.animate-scale-in {
+  animation: scaleIn 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Pop/scale entrance for story popups & success cards */
+@keyframes scaleUp {
+  from { opacity: 0; transform: scale(0.9) translateY(14px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.animate-scale-up {
+  animation: scaleUp 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 /* Drawer slides in from the left edge (cart & mobile menu in RTL layout) */
 @keyframes slideInLeft {
   from { transform: translateX(-100%); }
@@ -116,6 +144,24 @@ html {
 }
 .animate-slide-in-left {
   animation: slideInLeft 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Drawer slides in from the right edge (mobile filter panel in RTL layout) */
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+.animate-slide-in-right {
+  animation: slideInRight 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Backdrop fade-in for overlays */
+@keyframes overlayIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.animate-overlay-in {
+  animation: overlayIn 0.26s ease-out;
 }
 
 /* FAQ accordion smooth open: fade + slight slide-down */

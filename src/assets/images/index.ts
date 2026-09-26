@@ -1,5 +1,6 @@
 // Auto-generated image index - all local images
 import heroLipstick from './hero-lipstick.jpg';
+import heroLipstickArt from './hero-lipstick-art.svg';
 import heroSerum from './hero-serum.jpg';
 import heroPerfume from './hero-perfume.jpg';
 import categoryFaceMakeup from './category-face-makeup.jpg';
@@ -21,6 +22,7 @@ import brandHudaBeauty from './brand-huda-beauty.jpg';
 
 export {
   heroLipstick,
+  heroLipstickArt,
   heroSerum,
   heroPerfume,
   categoryFaceMakeup,

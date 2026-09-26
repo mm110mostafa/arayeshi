@@ -84,8 +84,8 @@ export const BeautyMagView: React.FC<{ onArticleClick?: (article: BeautyArticle)
 
       {/* Article Detail Reader Modal */}
       {selectedArticle && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="relative w-full max-w-3xl bg-white rounded-3xl shadow-2xl overflow-hidden my-8 border border-slate-100 p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+          <div className="relative w-full max-w-3xl bg-white rounded-3xl shadow-2xl overflow-hidden my-8 border border-slate-100 p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto animate-scale-in">
             
             <button
               onClick={() => setSelectedArticle(null)}

@@ -47,7 +47,7 @@ export const StorySection: React.FC<StorySectionProps> = ({ onSelectCategory }) 
 
       {/* Story Popup Modal */}
       {activeStory && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
           <div className="relative w-full max-w-sm bg-slate-900 text-white rounded-3xl overflow-hidden shadow-2xl border border-slate-800 animate-scale-up">
             
             {/* Progress Bar Top */}

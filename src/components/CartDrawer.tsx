@@ -65,7 +65,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
       {/* Backdrop */}
       <div
         onClick={onClose}
-        className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs"
+        className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs animate-overlay-in"
       />
 
       {/* Drawer content (Slides in from Left in RTL layout) */}

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { 
   Search, ShoppingCart, Heart, Menu, ChevronDown, 
   Sparkles, User, Percent, PhoneCall,
-  Grid, Flame, BookOpen, Info, Phone, LogIn
+  Grid, Flame, BookOpen, Info, Phone, LogIn, X
 } from 'lucide-react';
 import { Category, Product, CartItem } from '../types';
 import { CATEGORIES, PRODUCTS } from '../data/products';
@@ -37,6 +37,7 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
   const [activeMegaCategory, setActiveMegaCategory] = useState<Category>(CATEGORIES[0]);
+  const [mobileExpandedId, setMobileExpandedId] = useState<string | null>(CATEGORIES[0].id);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -122,7 +123,7 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Live Search Auto-complete Overlay */}
           {isSearchFocused && (
-            <div className="absolute top-full right-0 left-0 mt-2 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-50 p-4">
+            <div className="absolute top-full right-0 left-0 mt-2 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-50 p-4 animate-dropdown-in">
               {searchQuery.trim() ? (
                 <div>
                   <div className="text-xs font-semibold text-slate-400 mb-2">نتایج پیشنهادی:</div>
@@ -224,7 +225,7 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
 
             {isUserMenuOpen && (
-              <div className="absolute left-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 p-2 z-50 text-xs">
+              <div className="absolute left-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 p-2 z-50 text-xs animate-dropdown-in">
                 {isLoggedIn ? (
                   <>
                     <div className="p-3 bg-rose-50 rounded-xl mb-2">
@@ -316,7 +317,7 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Navigation Bar & Mega Menu Strip */}
       <div className="border-t border-slate-100 bg-white">
-        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between h-12 text-xs sm:text-sm font-medium">
+        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between h-12 text-xs sm:text-sm font-medium relative">
           
           {/* Mega Menu Toggle */}
           <div className="relative group">
@@ -330,11 +331,11 @@ export const Header: React.FC<HeaderProps> = ({
               <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${isMegaMenuOpen ? 'rotate-180' : ''}`} />
             </button>
 
-            {/* Mega Menu Dropdown */}
+            {/* Mega Menu Dropdown (Desktop) */}
             {isMegaMenuOpen && (
               <div
                 onMouseLeave={() => setIsMegaMenuOpen(false)}
-                className="absolute right-0 top-full mt-0 w-[780px] bg-white rounded-b-2xl shadow-2xl border border-slate-100 overflow-hidden z-50 flex hidden lg:flex"
+                className="absolute right-0 top-full mt-0 w-[780px] bg-white rounded-b-2xl shadow-2xl border border-slate-100 overflow-hidden z-50 hidden lg:flex animate-dropdown-in"
               >
                 {/* Right categories sidebar */}
                 <div className="w-56 bg-slate-50 border-l border-slate-100 p-2 space-y-1">
@@ -421,6 +422,92 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
             )}
           </div>
+
+          {/* Mobile Category Mega Menu Overlay (slides over page content) */}
+          {isMegaMenuOpen && (
+            <>
+              {/* Backdrop - dims & sits on top of page content, tap to close */}
+              <div
+                onClick={() => setIsMegaMenuOpen(false)}
+                className="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-xs animate-overlay-in lg:hidden"
+              />
+              {/* Category panel - anchored under the nav strip, overlays all elements */}
+              <div className="absolute top-full inset-x-0 z-50 lg:hidden bg-white shadow-2xl border-b border-slate-100 max-h-[70vh] overflow-y-auto animate-dropdown-in">
+                <div className="px-4 py-3">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="font-black text-slate-800 text-sm flex items-center gap-2">
+                      <Grid className="w-4 h-4 text-rose-600" />
+                      <span>دسته‌بندی کالاها</span>
+                    </h3>
+                    <button
+                      onClick={() => setIsMegaMenuOpen(false)}
+                      className="p-1.5 rounded-full hover:bg-slate-100 text-slate-500 transition-colors"
+                      aria-label="بستن دسته‌بندی‌ها"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+
+                  <div className="space-y-2 pb-2">
+                    {CATEGORIES.map((category) => {
+                      const isExpanded = mobileExpandedId === category.id;
+                      return (
+                        <div
+                          key={category.id}
+                          className="border border-slate-200/80 rounded-2xl overflow-hidden bg-white shadow-xs"
+                        >
+                          <button
+                            onClick={() =>
+                              setMobileExpandedId(isExpanded ? null : category.id)
+                            }
+                            className="w-full text-right p-3 font-bold text-slate-800 flex items-center justify-between hover:bg-slate-50 transition-colors"
+                          >
+                            <div className="flex items-center gap-2.5">
+                              <span className="w-2 h-2 rounded-full bg-rose-500"></span>
+                              <span>{category.name}</span>
+                            </div>
+                            <ChevronDown
+                              className={`w-4 h-4 text-slate-400 transition-transform ${
+                                isExpanded ? 'rotate-180 text-rose-600' : ''
+                              }`}
+                            />
+                          </button>
+
+                          {isExpanded && (
+                            <div className="bg-slate-50 border-t border-slate-100 p-2 space-y-1 animate-accordion">
+                              <button
+                                onClick={() => {
+                                  onSelectCategoryFilter(category.slug);
+                                  setIsMegaMenuOpen(false);
+                                }}
+                                className="w-full text-right p-2 text-xs font-bold text-rose-600 hover:bg-rose-100/50 rounded-lg"
+                              >
+                                مشاهده همه {category.name} ←
+                              </button>
+                              {category.subcategories.map((sub) => (
+                                <button
+                                  key={sub.id}
+                                  onClick={() => {
+                                    onSelectCategoryFilter(sub.slug);
+                                    setIsMegaMenuOpen(false);
+                                  }}
+                                  className="w-full text-right p-2 text-xs text-slate-600 hover:text-rose-600 hover:bg-white rounded-lg transition-colors flex items-center gap-2"
+                                >
+                                  <span className="text-slate-300">•</span>
+                                  <span>{sub.name}</span>
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+
 
           {/* Quick Nav Links */}
           <nav className="hidden lg:flex items-center gap-6 text-slate-600 font-medium text-xs sm:text-sm">

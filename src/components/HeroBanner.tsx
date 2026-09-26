@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronRight, ChevronLeft, Sparkles, ArrowLeft } from 'lucide-react';
-import { heroLipstick, heroSerum, heroPerfume } from '../assets/images';
+import { heroLipstickArt, heroSerum, heroPerfume } from '../assets/images';
 import { toPersianDigits } from '../utils/formatters';
 
 interface HeroBannerProps {
@@ -15,7 +15,7 @@ const HERO_SLIDES = [
     subtitle: 'تا ۷۰٪ تخفیف روی انواع رژ لب‌های مخملی کالیستا و مای، تجربه‌ای از نرمی بی‌نظیر روی لب‌های شما',
     buttonText: 'مشاهده و خرید رژلب‌ها',
     categorySlug: 'solid-lipstick',
-    image: heroLipstick,
+    image: heroLipstickArt,
     overlay: 'bg-gradient-to-r from-rose-950/85 via-rose-900/50 to-pink-700/10',
     glow: 'bg-rose-300/30',
   },

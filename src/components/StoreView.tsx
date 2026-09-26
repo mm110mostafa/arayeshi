@@ -496,8 +496,8 @@ export const StoreView: React.FC<StoreViewProps> = ({
 
       {/* Mobile Filter Modal */}
       {isMobileFilterOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex justify-end">
-          <div className="w-full max-w-xs bg-white h-full p-5 overflow-y-auto space-y-6">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex justify-end animate-overlay-in">
+          <div className="w-full max-w-xs bg-white h-full p-5 overflow-y-auto space-y-6 animate-slide-in-left">
             <div className="flex items-center justify-between border-b pb-3">
               <h3 className="font-bold text-slate-800 text-sm">فیلترهای پیشرفته</h3>
               <button onClick={() => setIsMobileFilterOpen(false)}>
