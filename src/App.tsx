@@ -18,6 +18,8 @@ import { StoreView } from './components/StoreView';
 import { AboutUsView } from './components/AboutUsView';
 import { ContactUsView } from './components/ContactUsView';
 import { BeautyMagView } from './components/BeautyMagView';
+import { LoginPage } from './components/LoginPage';
+import { RegisterPage } from './components/RegisterPage';
 import { Footer } from './components/Footer';
 import { formatPrice, slugify } from './utils/formatters';
 import { 
@@ -36,7 +38,11 @@ export function App() {
     }
   ]);
   const [wishlistIds, setWishlistIds] = useState<string[]>(['p1', 'p2']);
-  const [activeTab, setActiveTab] = useState<'home' | 'store' | 'about' | 'contact' | 'mag' | 'wishlist' | 'orders'>('home');
+  const [activeTab, setActiveTab] = useState<'home' | 'store' | 'about' | 'contact' | 'mag' | 'wishlist' | 'orders' | 'login' | 'register'>('home');
+
+  // User Authentication State
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userName, setUserName] = useState('کاربر گرامی');
   
   // Modals & Drawers
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -163,7 +169,24 @@ export function App() {
   const productSlug = (p: Product) => slugify(p.title);
   const articleSlug = (a: BeautyArticle) => slugify(a.title);
 
-  const VALID_TABS = ['home', 'store', 'about', 'contact', 'mag', 'wishlist', 'orders'] as const;
+  const VALID_TABS = ['home', 'store', 'about', 'contact', 'mag', 'wishlist', 'orders', 'login', 'register'] as const;
+
+  // Login / Register / Logout handlers (shared with Header & pages)
+  const handleLogin = (name?: string) => {
+    if (name) setUserName(name);
+    setIsLoggedIn(true);
+    showToast('با موفقیت وارد حساب کاربری خود شدید.');
+    navigate('#/home');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setUserName('کاربر گرامی');
+    showToast('از حساب کاربری خود خارج شدید.');
+    navigate('#/home');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   // Apply a hash route to app state (used on load, navigation and popstate)
   const applyHash = (hash: string) => {
@@ -272,6 +295,10 @@ export function App() {
           )}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
+        isLoggedIn={isLoggedIn}
+        userName={userName}
+        onLogout={handleLogout}
+        onNavigateToLogin={() => navigate('#/login')}
       />
 
       {/* Mobile Drawer Navigation (Opens from RIGHT for RTL as requested) */}
@@ -519,6 +546,24 @@ export function App() {
 
         {/* Beauty Mag Page View */}
         {!detailView && activeTab === 'mag' && <BeautyMagView onArticleClick={navigateToArticle} />}
+
+        {/* Login Page View */}
+        {!detailView && activeTab === 'login' && (
+          <LoginPage
+            onLogin={handleLogin}
+            onNavigateToRegister={() => navigate('#/register')}
+            onBack={() => navigate('#/home')}
+          />
+        )}
+
+        {/* Register Page View */}
+        {!detailView && activeTab === 'register' && (
+          <RegisterPage
+            onRegister={handleLogin}
+            onNavigateToLogin={() => navigate('#/login')}
+            onBack={() => navigate('#/home')}
+          />
+        )}
 
       </main>
 

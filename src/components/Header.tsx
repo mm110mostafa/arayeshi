@@ -20,6 +20,10 @@ interface HeaderProps {
   onSelectCategoryFilter: (categorySlug: string) => void;
   searchQuery: string;
   setSearchQuery: (q: string) => void;
+  isLoggedIn: boolean;
+  userName: string;
+  onLogout: () => void;
+  onNavigateToLogin: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -33,15 +37,17 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenMobileMenu,
   onSelectCategoryFilter,
   searchQuery,
-  setSearchQuery
+  setSearchQuery,
+  isLoggedIn,
+  userName,
+  onLogout,
+  onNavigateToLogin
 }) => {
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
   const [activeMegaCategory, setActiveMegaCategory] = useState<Category>(CATEGORIES[0]);
   const [mobileExpandedId, setMobileExpandedId] = useState<string | null>(CATEGORIES[0].id);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const userName = 'سارا محمدی';
 
   const totalCartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
@@ -214,68 +220,61 @@ export const Header: React.FC<HeaderProps> = ({
           {/* User Account Button / Dropdown */}
           <div className="relative">
             <button
-              onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+              onClick={() => {
+                if (isLoggedIn) {
+                  setIsUserMenuOpen(!isUserMenuOpen);
+                } else {
+                  onNavigateToLogin();
+                }
+              }}
               className="flex items-center gap-2 border border-slate-200 hover:border-rose-300 rounded-2xl px-3 py-2 text-xs font-bold text-slate-700 hover:bg-rose-50/50 transition-all"
             >
               <User className="w-4 h-4 text-rose-600" />
               <span className="hidden md:inline">
                 {isLoggedIn ? userName : 'ورود / ثبت‌نام'}
               </span>
-              <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+              {isLoggedIn && (
+                <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+              )}
+              {!isLoggedIn && (
+                <LogIn className="w-3.5 h-3.5 text-rose-500" />
+              )}
             </button>
 
-            {isUserMenuOpen && (
+            {isLoggedIn && isUserMenuOpen && (
               <div className="absolute left-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 p-2 z-50 text-xs animate-dropdown-in">
-                {isLoggedIn ? (
-                  <>
-                    <div className="p-3 bg-rose-50 rounded-xl mb-2">
-                      <div className="font-bold text-slate-800">{userName}</div>
-                      <div className="text-[11px] text-slate-500">مشتری ویژه خوش لبخند</div>
-                    </div>
-                    <button
-                      onClick={() => {
-                        setActiveTab('orders');
-                        setIsUserMenuOpen(false);
-                      }}
-                      className="w-full text-right p-2 hover:bg-slate-100 rounded-lg font-medium text-slate-700 flex items-center justify-between"
-                    >
-                      سفارش‌های من
-                    </button>
-                    <button
-                      onClick={() => {
-                        onOpenWishlist();
-                        setIsUserMenuOpen(false);
-                      }}
-                      className="w-full text-right p-2 hover:bg-slate-100 rounded-lg font-medium text-slate-700"
-                    >
-                      لیست علاقه مندی‌ها ({toPersianDigits(wishlistIds.length)})
-                    </button>
-                    <hr className="my-1 border-slate-100" />
-                    <button
-                      onClick={() => {
-                        setIsLoggedIn(false);
-                        setIsUserMenuOpen(false);
-                      }}
-                      className="w-full text-right p-2 hover:bg-rose-50 text-rose-600 rounded-lg font-bold"
-                    >
-                      خروج از حساب کاربری
-                    </button>
-                  </>
-                ) : (
-                  <div className="p-2 space-y-2 text-center">
-                    <p className="text-slate-600 mb-2 font-medium">به خوش لبخند خوش آمدید</p>
-                    <button
-                      onClick={() => {
-                        setIsLoggedIn(true);
-                        setIsUserMenuOpen(false);
-                      }}
-                      className="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-2 rounded-xl transition-colors shadow-md shadow-rose-200 flex items-center justify-center gap-1.5"
-                    >
-                      <LogIn className="w-4 h-4" />
-                      ورود سریع
-                    </button>
-                  </div>
-                )}
+                <div className="p-3 bg-rose-50 rounded-xl mb-2">
+                  <div className="font-bold text-slate-800">{userName}</div>
+                  <div className="text-[11px] text-slate-500">مشتری ویژه خوش لبخند</div>
+                </div>
+                <button
+                  onClick={() => {
+                    setActiveTab('orders');
+                    setIsUserMenuOpen(false);
+                  }}
+                  className="w-full text-right p-2 hover:bg-slate-100 rounded-lg font-medium text-slate-700 flex items-center justify-between"
+                >
+                  سفارش‌های من
+                </button>
+                <button
+                  onClick={() => {
+                    onOpenWishlist();
+                    setIsUserMenuOpen(false);
+                  }}
+                  className="w-full text-right p-2 hover:bg-slate-100 rounded-lg font-medium text-slate-700"
+                >
+                  لیست علاقه مندی‌ها ({toPersianDigits(wishlistIds.length)})
+                </button>
+                <hr className="my-1 border-slate-100" />
+                <button
+                  onClick={() => {
+                    onLogout();
+                    setIsUserMenuOpen(false);
+                  }}
+                  className="w-full text-right p-2 hover:bg-rose-50 text-rose-600 rounded-lg font-bold"
+                >
+                  خروج از حساب کاربری
+                </button>
               </div>
             )}
           </div>

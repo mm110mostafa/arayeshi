@@ -101,7 +101,7 @@ export interface BeautyArticle {
   tags: string[];
 }
 
-export type ActiveTab = 'home' | 'store' | 'about' | 'contact' | 'mag' | 'wishlist' | 'orders';
+export type ActiveTab = 'home' | 'store' | 'about' | 'contact' | 'mag' | 'wishlist' | 'orders' | 'login' | 'register';
 
 export interface FilterState {
   searchQuery: string;
