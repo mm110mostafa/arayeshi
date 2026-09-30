@@ -30,7 +30,7 @@ export const CategoryGrid: React.FC<CategoryGridProps> = ({ onSelectCategory }) 
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-xl sm:text-2xl font-black text-slate-800">
+          <h2 className="text-base sm:text-2xl font-black text-slate-800 whitespace-nowrap">
             دسته‌بندی‌های محبوب خوش لبخند
           </h2>
           <p className="text-xs text-slate-400 font-medium mt-1">

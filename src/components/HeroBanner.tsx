@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ChevronRight, ChevronLeft, Sparkles, ArrowLeft } from 'lucide-react';
 import { heroLipstickArt, heroSerum, heroPerfume } from '../assets/images';
 import { toPersianDigits } from '../utils/formatters';
@@ -45,6 +45,8 @@ const HERO_SLIDES = [
 
 export const HeroBanner: React.FC<HeroBannerProps> = ({ onNavigateStore }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -61,9 +63,39 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ onNavigateStore }) => {
     setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length);
   };
 
+  // Touch swipe support: horizontal drag switches slides (RTL aware),
+  // while vertical scrolls the page normally.
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null || touchStartY.current === null) return;
+
+    const deltaX = e.changedTouches[0].clientX - touchStartX.current;
+    const deltaY = e.changedTouches[0].clientY - touchStartY.current;
+
+    // Ignore mostly-vertical gestures so page scroll isn't hijacked
+    if (Math.abs(deltaX) > 45 && Math.abs(deltaX) > Math.abs(deltaY) * 1.4) {
+      if (deltaX < 0) {
+        handlePrev(); // swiping left (finger right→left) → previous slide in RTL
+      } else {
+        handleNext(); // swiping right → next slide in RTL
+      }
+    }
+
+    touchStartX.current = null;
+    touchStartY.current = null;
+  };
+
   return (
     <section className="max-w-7xl mx-auto px-4">
-      <div className="relative h-[460px] sm:h-[540px] lg:h-[600px] rounded-3xl overflow-hidden shadow-2xl shadow-rose-900/20 group">
+      <div
+        className="relative h-[460px] sm:h-[540px] lg:h-[600px] rounded-3xl overflow-hidden shadow-2xl shadow-rose-900/20 group select-none"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         {/* Slides */}
         {HERO_SLIDES.map((slide, idx) => {
           const isActive = currentSlide === idx;
@@ -98,8 +130,8 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ onNavigateStore }) => {
               </>
 
               {/* Slide content */}
-              <div className="relative h-full flex items-end p-6 sm:p-10 lg:p-14">
-                <div className="max-w-2xl space-y-4 sm:space-y-5">
+              <div className="relative h-full flex items-end p-5 pb-16 sm:p-10 sm:pb-12 lg:p-14">
+                <div className="max-w-2xl space-y-2.5 sm:space-y-5">
                   <span
                     className={`inline-flex items-center gap-1.5 bg-white/15 backdrop-blur-md text-white text-[11px] sm:text-xs font-bold px-3 py-1.5 rounded-full border border-white/25 transition-opacity duration-300 ${
                       isActive ? 'animate-hero-content' : 'opacity-0'
@@ -111,7 +143,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ onNavigateStore }) => {
                   </span>
 
                   <h2
-                    className={`text-3xl sm:text-5xl lg:text-6xl font-black leading-[1.15] tracking-tight text-white drop-shadow-lg transition-opacity duration-300 ${
+                    className={`text-2xl sm:text-5xl lg:text-6xl font-black leading-[1.15] tracking-tight text-white drop-shadow-lg transition-opacity duration-300 ${
                       isActive ? 'animate-hero-content' : 'opacity-0'
                     }`}
                     style={isActive ? { animationDelay: '0.15s' } : undefined}
@@ -120,7 +152,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ onNavigateStore }) => {
                   </h2>
 
                   <p
-                    className={`text-sm sm:text-base lg:text-lg text-white/85 font-medium leading-relaxed max-w-lg drop-shadow transition-opacity duration-300 ${
+                    className={`text-xs sm:text-base lg:text-lg text-white/85 font-medium leading-relaxed max-w-lg drop-shadow transition-opacity duration-300 ${
                       isActive ? 'animate-hero-content' : 'opacity-0'
                     }`}
                     style={isActive ? { animationDelay: '0.28s' } : undefined}
@@ -129,17 +161,17 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ onNavigateStore }) => {
                   </p>
 
                   <div
-                    className={`flex items-center gap-3 sm:gap-4 pt-1 sm:pt-2 transition-opacity duration-300 ${
+                    className={`flex items-center gap-3 sm:gap-4 pt-0.5 sm:pt-2 transition-opacity duration-300 ${
                       isActive ? 'animate-hero-content' : 'opacity-0'
                     }`}
                     style={isActive ? { animationDelay: '0.42s' } : undefined}
                   >
                     <button
                       onClick={() => onNavigateStore(slide.categorySlug)}
-                      className="group/btn inline-flex items-center gap-2 bg-white hover:bg-rose-50 text-rose-700 font-bold text-sm sm:text-base px-5 sm:px-7 py-3 sm:py-3.5 rounded-2xl shadow-xl shadow-black/25 transition-all hover:scale-105 active:scale-95"
+                      className="group/btn inline-flex items-center gap-1.5 sm:gap-2 bg-white hover:bg-rose-50 text-rose-700 font-bold text-xs sm:text-base px-4 sm:px-7 py-2.5 sm:py-3.5 rounded-2xl shadow-xl shadow-black/25 transition-all hover:scale-105 active:scale-95"
                     >
                       {slide.buttonText}
-                      <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover/btn:-translate-x-1" />
+                      <ArrowLeft className="w-3.5 h-3.5 sm:w-5 sm:h-5 transition-transform group-hover/btn:-translate-x-1" />
                     </button>
                   </div>
                 </div>

@@ -365,8 +365,8 @@ export function App() {
             <div className="max-w-7xl mx-auto px-4 py-6 space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-xl sm:text-2xl font-black text-slate-800 flex items-center gap-2">
-                    <Flame className="w-5 h-5 text-rose-600" />
+                  <h2 className="text-base sm:text-2xl font-black text-slate-800 flex items-center gap-2 whitespace-nowrap">
+                    <Flame className="w-4 h-4 sm:w-5 sm:h-5 text-rose-600 shrink-0" />
                     <span>پرفروش‌ترین‌های این هفته</span>
                   </h2>
                   <p className="text-xs text-slate-400 font-medium mt-0.5">
@@ -379,9 +379,9 @@ export function App() {
                     setFilterState((prev) => ({ ...prev, sortBy: 'popular' }));
                     navigate('#/store');
                   }}
-                  className="text-xs font-bold text-rose-600 hover:underline flex items-center gap-1"
+                  className="text-xs font-bold text-rose-600 hover:underline flex items-center gap-1 shrink-0"
                 >
-                  <span>مشاهده همه پرفروش‌ها</span>
+                  <span>مشاهده همه</span>
                   <ArrowLeft className="w-4 h-4" />
                 </button>
               </div>

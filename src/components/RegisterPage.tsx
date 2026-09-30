@@ -4,6 +4,19 @@ import {
   CheckCircle2, Gift, Percent
 } from 'lucide-react';
 
+// Convert any Persian/Arabic-Indic digits in the string to English digits
+const toEnglishDigits = (value: string): string =>
+  value
+    .replace(/[۰-۹]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d).toString())
+    .replace(/[٠-٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d).toString());
+
+// Validate an Iranian mobile number in any of these formats:
+// 09123456789 / ۹۱... (Persian digits) / +989123456789 / 00989123456789
+const isValidIranMobile = (raw: string): boolean => {
+  const phone = toEnglishDigits(raw).replace(/[\s\-_()]/g, '');
+  return /^(\+98|0098|98|0)?9\d{9}$/.test(phone);
+};
+
 interface RegisterPageProps {
   onRegister: (name?: string) => void;
   onNavigateToLogin: () => void;
@@ -32,7 +45,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
     if (!name.trim()) newErrors.name = 'نام و نام خانوادگی خود را وارد کنید.';
     if (!phone.trim()) {
       newErrors.phone = 'شماره موبایل خود را وارد کنید.';
-    } else if (!/^۰۹\d{9}$|^09\d{9}$/.test(phone.replace(/\s/g, ''))) {
+    } else if (!isValidIranMobile(phone)) {
       newErrors.phone = 'شماره موبایل معتبر نیست (مثال: ۰۹۱۲۳۴۵۶۷۸۹).';
     }
     if (email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
@@ -115,10 +128,12 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
                 <Phone className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                 <input
                   type="text"
+                  inputMode="tel"
+                  dir="ltr"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="۰۹۱۲۳۴۵۶۷۸۹"
-                  className={`w-full pr-12 pl-4 py-3.5 rounded-2xl border-2 outline-none transition-all text-sm font-medium ${
+                  className={`w-full pr-12 pl-4 py-3.5 rounded-2xl border-2 outline-none transition-all text-sm font-medium text-right ${
                     errors.phone
                       ? 'border-rose-400 bg-rose-50/50 focus:border-rose-500'
                       : 'border-slate-200 bg-slate-50/50 focus:border-rose-400 focus:bg-white'

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   Search, ShoppingCart, Heart, Menu, ChevronDown, 
   Sparkles, User, Percent, PhoneCall,
@@ -48,6 +48,26 @@ export const Header: React.FC<HeaderProps> = ({
   const [mobileExpandedId, setMobileExpandedId] = useState<string | null>(CATEGORIES[0].id);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
+
+  // Close the user dropdown when clicking/tapping anywhere outside of it
+  useEffect(() => {
+    if (!isUserMenuOpen) return;
+    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+      if (
+        userMenuRef.current &&
+        !userMenuRef.current.contains(event.target as Node)
+      ) {
+        setIsUserMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, [isUserMenuOpen]);
 
   const totalCartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
@@ -218,7 +238,7 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
 
           {/* User Account Button / Dropdown */}
-          <div className="relative">
+          <div className="relative" ref={userMenuRef}>
             <button
               onClick={() => {
                 if (isLoggedIn) {
@@ -244,7 +264,7 @@ export const Header: React.FC<HeaderProps> = ({
             {isLoggedIn && isUserMenuOpen && (
               <div className="absolute left-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 p-2 z-50 text-xs animate-dropdown-in">
                 <div className="p-3 bg-rose-50 rounded-xl mb-2">
-                  <div className="font-bold text-slate-800">{userName}</div>
+                  <div className="font-bold text-slate-800">سلام، {userName}</div>
                   <div className="text-[11px] text-slate-500">مشتری ویژه خوش لبخند</div>
                 </div>
                 <button
@@ -254,7 +274,7 @@ export const Header: React.FC<HeaderProps> = ({
                   }}
                   className="w-full text-right p-2 hover:bg-slate-100 rounded-lg font-medium text-slate-700 flex items-center justify-between"
                 >
-                  سفارش‌های من
+                  پنل کاربری
                 </button>
                 <button
                   onClick={() => {

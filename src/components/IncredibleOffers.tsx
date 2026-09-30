@@ -49,7 +49,7 @@ export const IncredibleOffers: React.FC<IncredibleOffersProps> = ({
             </div>
 
             <div className="space-y-1">
-              <h2 className="text-2xl sm:text-3xl font-black leading-tight">
+              <h2 className="text-2xl sm:text-3xl font-black leading-tight whitespace-nowrap">
                 تخفیف‌های استثنایی
               </h2>
               <p className="text-xs text-rose-100 font-medium">
