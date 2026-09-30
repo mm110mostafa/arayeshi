@@ -514,7 +514,7 @@ export function App() {
             <div className="border-b border-slate-200 pb-4">
               <h1 className="text-2xl font-black text-slate-800 flex items-center gap-2">
                 <ShoppingBag className="w-6 h-6 text-rose-600" />
-                <span>سفارش‌های من</span>
+                <span>پنل کاربری</span>
               </h1>
             </div>
 
