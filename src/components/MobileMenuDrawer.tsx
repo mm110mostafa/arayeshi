@@ -20,7 +20,7 @@ export const MobileMenuDrawer: React.FC<MobileMenuDrawerProps> = ({
   setActiveTab,
   onSelectCategoryFilter
 }) => {
-  const [expandedCategoryId, setExpandedCategoryId] = useState<string | null>(CATEGORIES[0].id);
+  const [expandedCategoryId, setExpandedCategoryId] = useState<string | null>(null);
 
   return (
     <div

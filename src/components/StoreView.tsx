@@ -122,6 +122,24 @@ export const StoreView: React.FC<StoreViewProps> = ({
     if (initialPage && initialPage > 0) setCurrentPage(initialPage);
   }, [initialPage]);
 
+  // Reset all filters when leaving the store page so it opens fresh next time
+  useEffect(() => {
+    return () => {
+      setFilterState({
+        searchQuery: '',
+        selectedCategory: '',
+        selectedSubcategory: '',
+        selectedBrands: [],
+        priceRange: [0, 3000000],
+        onlyInStock: false,
+        onlyDiscounted: false,
+        onlyIncredible: false,
+        sortBy: 'popular'
+      });
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Pagination calculations
   const totalPages = Math.max(1, Math.ceil(filteredProducts.length / ITEMS_PER_PAGE));
   const safeCurrentPage = Math.min(currentPage, totalPages);

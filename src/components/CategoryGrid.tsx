@@ -39,10 +39,10 @@ export const CategoryGrid: React.FC<CategoryGridProps> = ({ onSelectCategory }) 
         </div>
         <button
           onClick={() => onSelectCategory('')}
-          className="text-xs sm:text-sm font-bold text-rose-600 hover:text-rose-700 flex items-center gap-1 group"
+          className="text-[10px] sm:text-xs font-bold text-rose-600 hover:text-rose-700 flex items-center gap-1 group"
         >
-          <span>مشاهده همه دسته‌بندی‌ها</span>
-          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+          <span>مشاهده همه</span>
+          <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
         </button>
       </div>
 

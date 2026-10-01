@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { Product, ProductColor } from '../types';
 import { formatPrice, toPersianDigits } from '../utils/formatters';
 import {
-  Star, Heart, ShoppingCart, ShieldCheck, Truck, RotateCcw,
-  Check, Sparkles, MessageSquare, ThumbsUp, ChevronLeft
+  Star, ShoppingCart, ShieldCheck, Truck, RotateCcw,
+  Check, Sparkles, MessageSquare, ThumbsUp, ChevronLeft, Heart
 } from 'lucide-react';
 
 interface ProductDetailPageProps {
@@ -37,20 +37,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
   // Similar products: same category, excluding current product
   const similarProducts = allProducts
     .filter((p) => p.categorySlug === product.categorySlug && p.id !== product.id)
-    .slice(0, 4);
-
-  // Recommended products: best-sellers & incredible offers from other categories,
-  // excluding the current product and anything already shown in "similar products"
-  const recommendedProducts = allProducts
-    .filter(
-      (p) => p.id !== product.id && !similarProducts.some((sp) => sp.id === p.id)
-    )
-    .sort((a, b) => {
-      const score = (p: Product) =>
-        (p.isIncredibleOffer ? 2 : 0) + (p.isBestSeller ? 1 : 0) + p.rating / 10;
-      return score(b) - score(a);
-    })
-    .slice(0, 4);
+    .slice(0, 2);
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6 animate-fade-in">
@@ -399,64 +386,6 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             {similarProducts.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => {
-                  onSelectProduct(item);
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-                className="bg-white rounded-3xl p-3 sm:p-4 border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all text-right group flex flex-col gap-2"
-              >
-                <div className="h-32 sm:h-40 flex items-center justify-center bg-slate-50 rounded-2xl overflow-hidden">
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    className="max-h-full max-w-full object-contain p-2 group-hover:scale-105 transition-transform"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <span className="text-[10px] font-bold text-slate-400 block truncate">
-                    {item.brand}
-                  </span>
-                  <h3 className="text-[11px] sm:text-xs font-bold text-slate-800 line-clamp-2 group-hover:text-rose-600 transition-colors min-h-[2rem] leading-snug">
-                    {item.title}
-                  </h3>
-                  <div className="flex items-center gap-1 text-[10px] text-slate-500">
-                    <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
-                    <span className="font-bold">{toPersianDigits(item.rating)}</span>
-                  </div>
-                  <div className="flex items-center justify-between gap-1 pt-1.5 border-t border-slate-50">
-                    <span className="text-xs sm:text-sm font-black text-rose-600">
-                      {formatPrice(item.price)}
-                    </span>
-                    {item.discountPercent > 0 && (
-                      <span className="text-[9px] bg-rose-100 text-rose-600 font-bold px-1.5 py-0.5 rounded-lg">
-                        ٪{toPersianDigits(item.discountPercent)}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </button>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* ===== Recommended Products (bottom of page, before footer) ===== */}
-      {recommendedProducts.length > 0 && (
-        <section className="mt-10">
-          <div className="flex items-center justify-between mb-5">
-            <h2 className="text-lg sm:text-xl font-black text-slate-800 flex items-center gap-2">
-              <Heart className="w-5 h-5 text-rose-600" />
-              <span>پیشنهادهای ویژه برای شما</span>
-            </h2>
-            <span className="text-xs text-slate-400 font-medium">
-              منتخب پرطرفدارترین محصولات
-            </span>
-          </div>
-
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-            {recommendedProducts.map((item) => (
               <button
                 key={item.id}
                 onClick={() => {
