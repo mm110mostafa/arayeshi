@@ -99,6 +99,16 @@ export interface BeautyArticle {
   image: string;
   category: string;
   tags: string[];
+  comments?: ArticleComment[];
+}
+
+export interface ArticleComment {
+  id: string;
+  userName: string;
+  date: string;
+  comment: string;
+  likes: number;
+  isVerified?: boolean;
 }
 
 export type ActiveTab = 'home' | 'store' | 'about' | 'contact' | 'mag' | 'wishlist' | 'orders' | 'login' | 'register';

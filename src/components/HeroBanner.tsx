@@ -90,9 +90,9 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ onNavigateStore }) => {
   };
 
   return (
-    <section className="lg:max-w-7xl lg:mx-auto lg:px-4">
+    <section className="max-w-7xl mx-auto px-4">
       <div
-        className="relative h-[460px] sm:h-[540px] lg:h-[600px] rounded-none lg:rounded-3xl overflow-hidden shadow-2xl shadow-rose-900/20 group select-none"
+        className="relative h-[460px] sm:h-[540px] lg:h-[600px] rounded-3xl overflow-hidden shadow-2xl shadow-rose-900/20 group select-none"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
