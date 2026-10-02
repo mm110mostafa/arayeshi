@@ -325,8 +325,9 @@ export const Header: React.FC<HeaderProps> = ({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onFocus={() => {
-              setActiveTab('store');
+              setIsSearchFocused(true);
             }}
+            onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
             placeholder="جستجوی محصول یا برند در خوش لبخند..."
             className="w-full bg-slate-100 border border-slate-200 rounded-xl py-2 pr-10 pl-4 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-rose-500"
           />

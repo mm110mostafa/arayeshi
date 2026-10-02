@@ -247,3 +247,13 @@ html {
 .persian-num {
   font-feature-settings: "ss01";
 }
+
+/* Hide scrollbar for horizontal touch-slider carousels (newest products slider, stories, etc.) */
+@utility scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+

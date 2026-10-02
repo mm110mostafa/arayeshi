@@ -24,7 +24,7 @@ import { Footer } from './components/Footer';
 import { formatPrice, slugify } from './utils/formatters';
 import { 
   CheckCircle2, Heart, ShoppingBag, 
-  Flame, ShieldCheck, ArrowLeft, Sparkles 
+  Flame, ShieldCheck, ArrowLeft, Sparkles, BookOpen 
 } from 'lucide-react';
 
 export function App() {
@@ -438,6 +438,112 @@ export function App() {
                 <div className="w-20 h-20 rounded-2xl bg-white/10 p-2 backdrop-blur-md hidden sm:flex items-center justify-center">
                   <ShieldCheck className="w-10 h-10 text-rose-300" />
                 </div>
+              </div>
+            </div>
+
+            {/* Newest Products Section - Touch-scrollable slider (4 cols desktop / 2 tablet / 1 mobile) */}
+            <div className="max-w-7xl mx-auto px-4 py-6 space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-base sm:text-2xl font-black text-slate-800 flex items-center gap-2 whitespace-nowrap">
+                    <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-rose-600 shrink-0" />
+                    <span>جدیدترین محصولات</span>
+                  </h2>
+                  <p className="text-xs text-slate-400 font-medium mt-0.5">
+                    تازه‌ترین محصولات آرایشی و بهداشتی که به فروشگاه خوش لبخند اضافه شده‌اند
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => {
+                    setFilterState((prev) => ({ ...prev, sortBy: 'newest' }));
+                    navigate('#/store');
+                  }}
+                  className="text-xs font-bold text-rose-600 hover:underline flex items-center gap-1 shrink-0"
+                >
+                  <span>مشاهده همه</span>
+                  <ArrowLeft className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="flex items-stretch gap-4 overflow-x-auto pb-4 pt-1 snap-x snap-mandatory scrollbar-none">
+                {products
+                  .filter((p) => p.isNew)
+                  .slice(0, 10)
+                  .map((product) => (
+                    <div
+                      key={product.id}
+                      className="snap-start shrink-0 w-[85%] sm:w-[calc(50%-0.5rem)] md:w-[calc(25%-0.75rem)]"
+                    >
+                      <ProductCard
+                        product={product}
+                        onSelectProduct={navigateToProduct}
+                        onQuickView={(p: Product) => setSelectedProduct(p)}
+                        onAddToCart={(p: Product, e: React.MouseEvent) => handleAddToCart(p, 1, undefined, e)}
+                        onToggleWishlist={handleToggleWishlist}
+                        isWishlisted={wishlistIds.includes(product.id)}
+                      />
+                    </div>
+                  ))}
+              </div>
+            </div>
+
+            {/* Beauty Magazine Section (before footer) */}
+            <div className="max-w-7xl mx-auto px-4 py-6 space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-base sm:text-2xl font-black text-slate-800 flex items-center gap-2 whitespace-nowrap">
+                    <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 text-rose-600 shrink-0" />
+                    <span>مجله خوش لبخند</span>
+                  </h2>
+                  <p className="text-xs text-slate-400 font-medium mt-0.5">
+                    جدیدترین مقالات آموزش آرایش، روتین پوستی و رازهای ماندگاری عطر
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => navigate('#/mag')}
+                  className="text-xs font-bold text-rose-600 hover:underline flex items-center gap-1 shrink-0"
+                >
+                  <span>مشاهده همه</span>
+                  <ArrowLeft className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {ARTICLES.slice(0, 3).map((article) => (
+                  <div
+                    key={article.id}
+                    onClick={() => navigateToArticle(article)}
+                    className="bg-white rounded-3xl p-4 border border-slate-100 shadow-sm hover:shadow-xl transition-all cursor-pointer group flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="h-48 rounded-2xl overflow-hidden mb-4 relative">
+                        <img
+                          src={article.image}
+                          alt={article.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                        <span className="absolute top-3 right-3 bg-slate-900/80 backdrop-blur-md text-white text-[10px] font-bold px-2.5 py-1 rounded-full">
+                          {article.category}
+                        </span>
+                      </div>
+
+                      <h3 className="font-black text-slate-800 text-sm sm:text-base line-clamp-2 leading-snug group-hover:text-rose-600 transition-colors mb-2">
+                        {article.title}
+                      </h3>
+
+                      <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed font-medium">
+                        {article.excerpt}
+                      </p>
+                    </div>
+
+                    <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-rose-600">
+                      <span>ادامه مطالعه مقاله</span>
+                      <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
 
