@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   LogIn, Eye, EyeOff, Phone, Lock, ArrowRight, Sparkles,
-  ShieldCheck, Gift, Truck
+  ShieldCheck, Gift, Truck, User
 } from 'lucide-react';
 
 interface LoginPageProps {
@@ -15,16 +15,20 @@ export const LoginPage: React.FC<LoginPageProps> = ({
   onNavigateToRegister,
   onBack
 }) => {
+  const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
-  const [errors, setErrors] = useState<{ phone?: string; password?: string }>({});
+  const [errors, setErrors] = useState<{ name?: string; phone?: string; password?: string }>({});
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const newErrors: { phone?: string; password?: string } = {};
+    const newErrors: { name?: string; phone?: string; password?: string } = {};
+    if (!name.trim()) {
+      newErrors.name = 'نام و نام خانوادگی خود را وارد کنید.';
+    }
     if (!phone.trim()) {
       newErrors.phone = 'شماره موبایل یا ایمیل خود را وارد کنید.';
     }
@@ -37,7 +41,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
 
-    onLogin();
+    onLogin(name.trim());
   };
 
   return (
@@ -110,6 +114,28 @@ export const LoginPage: React.FC<LoginPageProps> = ({
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Full Name input */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-700">نام و نام خانوادگی</label>
+              <div className="relative">
+                <User className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="مثال: سارا محمدی"
+                  className={`w-full pr-12 pl-4 py-3.5 rounded-2xl border-2 outline-none transition-all text-sm font-medium ${
+                    errors.name
+                      ? 'border-rose-400 bg-rose-50/50 focus:border-rose-500'
+                      : 'border-slate-200 bg-slate-50/50 focus:border-rose-400 focus:bg-white'
+                  }`}
+                />
+              </div>
+              {errors.name && (
+                <p className="text-xs text-rose-600 font-bold pr-1">{errors.name}</p>
+              )}
+            </div>
+
             {/* Phone / Email input */}
             <div className="space-y-2">
               <label className="text-xs font-bold text-slate-700">شماره موبایل یا ایمیل</label>

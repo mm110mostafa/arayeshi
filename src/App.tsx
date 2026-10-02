@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { PRODUCTS, ARTICLES } from './data/products';
-import { Product, CartItem, FilterState, ProductColor, BeautyArticle } from './types';
+import { Product, CartItem, FilterState, ProductColor, BeautyArticle, OrderRecord } from './types';
 import { Header } from './components/Header';
 import { MobileMenuDrawer } from './components/MobileMenuDrawer';
 import { StorySection } from './components/StorySection';
@@ -20,11 +20,12 @@ import { ContactUsView } from './components/ContactUsView';
 import { BeautyMagView } from './components/BeautyMagView';
 import { LoginPage } from './components/LoginPage';
 import { RegisterPage } from './components/RegisterPage';
+import { UserPanel } from './components/UserPanel';
 import { Footer } from './components/Footer';
-import { formatPrice, slugify } from './utils/formatters';
-import { 
-  CheckCircle2, Heart, ShoppingBag, 
-  Flame, ShieldCheck, ArrowLeft, Sparkles, BookOpen 
+import { slugify } from './utils/formatters';
+import {
+  CheckCircle2,
+  Flame, ShieldCheck, ArrowLeft, Sparkles, BookOpen
 } from 'lucide-react';
 
 export function App() {
@@ -38,6 +39,15 @@ export function App() {
     }
   ]);
   const [wishlistIds, setWishlistIds] = useState<string[]>(['p1', 'p2']);
+  const [orders, setOrders] = useState<OrderRecord[]>([
+    {
+      id: 'KHL-894120',
+      items: [{ product: PRODUCTS[0], quantity: 1, selectedColor: PRODUCTS[0].colors?.[0] }],
+      date: '۱۴۰۳/۰۲/۱۵',
+      status: 'تحویل داده شده',
+      total: PRODUCTS[0].price
+    }
+  ]);
   const [activeTab, setActiveTab] = useState<'home' | 'store' | 'about' | 'contact' | 'mag' | 'wishlist' | 'orders' | 'login' | 'register'>('home');
 
   // User Authentication State
@@ -569,79 +579,48 @@ export function App() {
           />
         )}
 
-        {/* Wishlist Page View */}
+        {/* Wishlist (User Panel) */}
         {!detailView && activeTab === 'wishlist' && (
-          <div className="max-w-7xl mx-auto px-4 py-10 space-y-6 animate-fade-in">
-            <div className="border-b border-slate-200 pb-4">
-              <h1 className="text-2xl font-black text-slate-800 flex items-center gap-2">
-                <Heart className="w-6 h-6 text-rose-600 fill-rose-600" />
-                <span>لیست علاقه مندی‌های من</span>
-              </h1>
-              <p className="text-xs text-slate-400 font-medium mt-1">
-                محصولاتی که علامت‌گذاری کرده‌اید تا بعداً خریداری کنید
-              </p>
-            </div>
-
-            {wishlistIds.length === 0 ? (
-              <div className="bg-white rounded-3xl p-12 text-center text-slate-400 space-y-3 border border-slate-100">
-                <Heart className="w-12 h-12 text-slate-300 mx-auto" />
-                <h3 className="font-bold text-slate-700 text-base">لیست علاقه‌مندی‌های شما خالی است</h3>
-                <p className="text-xs text-slate-400">با کلیک بر روی آیکون قلب هر محصول می‌توانید آن را اینجا ذخیره کنید.</p>
-                <button
-                  onClick={() => navigate('#/store')}
-                  className="bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs px-6 py-2.5 rounded-xl shadow-md transition-colors"
-                >
-                  مشاهده فروشگاه
-                </button>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                {products
-                  .filter((p) => wishlistIds.includes(p.id))
-                  .map((product) => (
-                    <ProductCard
-                      key={product.id}
-                      product={product}
-                      onSelectProduct={navigateToProduct}
-                      onQuickView={(p: Product) => setSelectedProduct(p)}
-                      onAddToCart={(p: Product, e: React.MouseEvent) => handleAddToCart(p, 1, undefined, e)}
-                      onToggleWishlist={handleToggleWishlist}
-                      isWishlisted={true}
-                    />
-                  ))}
-              </div>
-            )}
-          </div>
+          <UserPanel
+            userName={userName}
+            isLoggedIn={isLoggedIn}
+            cartItems={cartItems}
+            onUpdateQuantity={handleUpdateCartQuantity}
+            onRemoveItem={handleRemoveCartItem}
+            orders={orders}
+            wishlistIds={wishlistIds}
+            wishlistProducts={products.filter((p) => wishlistIds.includes(p.id))}
+            onToggleWishlist={handleToggleWishlist}
+            onSelectProduct={navigateToProduct}
+            onAddToCart={(p: Product, e: React.MouseEvent) => handleAddToCart(p, 1, undefined, e)}
+            onProceedToCheckout={() => setIsCheckoutModalOpen(true)}
+            onNavigateToStore={() => navigate('#/store')}
+            onNavigateToLogin={() => navigate('#/login')}
+            onLogout={handleLogout}
+            defaultSection="wishlist"
+          />
         )}
 
-        {/* Orders Page View */}
+        {/* Orders (User Panel) */}
         {!detailView && activeTab === 'orders' && (
-          <div className="max-w-7xl mx-auto px-4 py-10 space-y-6 animate-fade-in">
-            <div className="border-b border-slate-200 pb-4">
-              <h1 className="text-2xl font-black text-slate-800 flex items-center gap-2">
-                <ShoppingBag className="w-6 h-6 text-rose-600" />
-                <span>پنل کاربری</span>
-              </h1>
-            </div>
-
-            <div className="bg-white rounded-3xl p-6 border border-slate-100 space-y-4 shadow-sm">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b pb-4 text-xs">
-                <div>
-                  <span className="font-bold text-slate-800">سفارش #KHL-894120</span>
-                  <span className="text-emerald-600 font-bold mr-3">● تحویل داده شده</span>
-                </div>
-                <span className="text-slate-400">تاریخ: ۱۴۰۳/۰۲/۱۵</span>
-              </div>
-
-              <div className="flex items-center gap-4 py-2">
-                <img src={PRODUCTS[0].image} alt="" className="w-16 h-16 object-contain rounded-xl bg-slate-50 p-1 border" />
-                <div className="text-xs">
-                  <div className="font-bold text-slate-800">{PRODUCTS[0].title}</div>
-                  <div className="text-slate-400 mt-1">تعداد: ۱ عدد • مبلغ: {formatPrice(PRODUCTS[0].price)}</div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <UserPanel
+            userName={userName}
+            isLoggedIn={isLoggedIn}
+            cartItems={cartItems}
+            onUpdateQuantity={handleUpdateCartQuantity}
+            onRemoveItem={handleRemoveCartItem}
+            orders={orders}
+            wishlistIds={wishlistIds}
+            wishlistProducts={products.filter((p) => wishlistIds.includes(p.id))}
+            onToggleWishlist={handleToggleWishlist}
+            onSelectProduct={navigateToProduct}
+            onAddToCart={(p: Product, e: React.MouseEvent) => handleAddToCart(p, 1, undefined, e)}
+            onProceedToCheckout={() => setIsCheckoutModalOpen(true)}
+            onNavigateToStore={() => navigate('#/store')}
+            onNavigateToLogin={() => navigate('#/login')}
+            onLogout={handleLogout}
+            defaultSection="orders"
+          />
         )}
 
         {/* About Us Page View */}
@@ -702,7 +681,15 @@ export function App() {
         isOpen={isCheckoutModalOpen}
         onClose={() => setIsCheckoutModalOpen(false)}
         cartItems={cartItems}
-        onOrderSuccess={() => {
+        onOrderSuccess={(order) => {
+          const newOrder: OrderRecord = {
+            id: order.id,
+            items: order.items,
+            date: new Date().toLocaleDateString('fa-IR'),
+            status: 'در حال پردازش',
+            total: order.total
+          };
+          setOrders((prev) => [newOrder, ...prev]);
           setCartItems([]);
         }}
       />

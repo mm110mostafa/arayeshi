@@ -48,7 +48,18 @@ export const Header: React.FC<HeaderProps> = ({
   const [mobileExpandedId, setMobileExpandedId] = useState<string | null>(null);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
+
+  // Smoothly collapse the top festival ribbon once the page is scrolled down
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 24);
+    };
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Close the user dropdown when clicking/tapping anywhere outside of it
   useEffect(() => {
@@ -158,11 +169,17 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className="sticky top-0 z-40 bg-white shadow-sm font-vazir">
-      {/* Top Banner Ribbon - Digikala style */}
-      <div className="bg-gradient-to-r from-rose-600 via-pink-600 to-rose-700 text-white text-xs sm:text-sm py-2 px-4 text-center font-medium flex items-center justify-center gap-2 relative overflow-hidden">
-        <Sparkles className="w-4 h-4 animate-bounce text-amber-300" />
-        <span>⚡ جشنواره استثنایی خوش لبخند | تا ۷۰٪ تخفیف روی محبوب‌ترین رژ لب‌ها و محصولات پوستی + ارسال رایگان</span>
-        <span className="hidden md:inline bg-white/20 px-2 py-0.5 rounded text-[11px] font-bold">کد: SMILE20</span>
+      {/* Top Banner Ribbon - Digikala style (smoothly hides on scroll) */}
+      <div
+        className={`bg-gradient-to-r from-rose-600 via-pink-600 to-rose-700 text-white text-xs sm:text-sm px-4 text-center font-medium flex items-center justify-center gap-2 relative overflow-hidden transition-all duration-500 ease-in-out ${
+          isScrolled
+            ? 'max-h-0 opacity-0 -translate-y-4 py-0 invisible'
+            : 'max-h-20 opacity-100 translate-y-0 py-2 visible'
+        }`}
+      >
+        <Sparkles className="w-4 h-4 animate-bounce text-amber-300 shrink-0" />
+        <span className="truncate">⚡ جشنواره استثنایی خوش لبخند | تا ۷۰٪ تخفیف روی محبوب‌ترین رژ لب‌ها و محصولات پوستی + ارسال رایگان</span>
+        <span className="hidden md:inline bg-white/20 px-2 py-0.5 rounded text-[11px] font-bold shrink-0">کد: SMILE20</span>
       </div>
 
       {/* Main Header Middle Row */}
@@ -254,7 +271,7 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <User className="w-4 h-4 text-rose-600" />
               <span className="hidden md:inline">
-                {isLoggedIn ? userName : 'ورود / ثبت‌نام'}
+                {isLoggedIn ? `سلام، ${userName}` : 'ورود / ثبت‌نام'}
               </span>
               {isLoggedIn && (
                 <ChevronDown className="w-3.5 h-3.5 text-slate-400" />

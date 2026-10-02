@@ -113,6 +113,14 @@ export interface ArticleComment {
 
 export type ActiveTab = 'home' | 'store' | 'about' | 'contact' | 'mag' | 'wishlist' | 'orders' | 'login' | 'register';
 
+export interface OrderRecord {
+  id: string;
+  items: CartItem[];
+  date: string;
+  status: 'در حال پردازش' | 'در حال ارسال' | 'تحویل داده شده';
+  total: number;
+}
+
 export interface FilterState {
   searchQuery: string;
   selectedCategory: string;

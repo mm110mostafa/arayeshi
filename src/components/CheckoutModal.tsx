@@ -10,7 +10,7 @@ interface CheckoutModalProps {
   isOpen: boolean;
   onClose: () => void;
   cartItems: CartItem[];
-  onOrderSuccess: () => void;
+  onOrderSuccess: (order: { id: string; items: CartItem[]; total: number }) => void;
 }
 
 export const CheckoutModal: React.FC<CheckoutModalProps> = ({
@@ -46,7 +46,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
       origin: { y: 0.6 }
     });
 
-    onOrderSuccess();
+    onOrderSuccess({
+      id: trackingCode,
+      items: cartItems,
+      total: totalAmount
+    });
   };
 
   return (
