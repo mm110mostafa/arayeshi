@@ -5,7 +5,7 @@ import { ProductCard } from './ProductCard';
 import { formatPrice, toPersianDigits } from '../utils/formatters';
 import { 
   Filter, X, SlidersHorizontal, ArrowUpDown, Grid, 
-  List, Check, RotateCcw, Sparkles, ArrowLeft, ArrowRight 
+  List, Check, RotateCcw, Sparkles, ArrowLeft, ArrowRight, Search 
 } from 'lucide-react';
 
 interface StoreViewProps {
@@ -180,6 +180,16 @@ export const StoreView: React.FC<StoreViewProps> = ({
       sortBy: 'popular'
     });
   };
+
+  // Count active filters (used by the mobile drawer footer)
+  const activeFilterCount = [
+    filterState.searchQuery.trim(),
+    filterState.selectedCategory,
+    filterState.selectedBrands.length > 0 ? 'brands' : '',
+    filterState.priceRange[0] > 0 || filterState.priceRange[1] < 3000000 ? 'price' : '',
+    filterState.onlyInStock ? 'stock' : '',
+    filterState.onlyDiscounted ? 'discount' : ''
+  ].filter(Boolean).length;
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6 font-vazir">
@@ -436,19 +446,19 @@ export const StoreView: React.FC<StoreViewProps> = ({
         </div>
       </div>
 
-      {/* Numeric Pagination */}
+      {/* Numeric Pagination (responsive - visible on all screen sizes) */}
       {totalPages > 1 && (
           <React.Fragment>
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm px-4 py-3 mt-8">
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm px-3 sm:px-4 py-3 mt-8">
               <nav
                 aria-label="صفحه‌بندی محصولات"
-                className="flex items-center justify-center gap-2 select-none"
+                className="flex items-center justify-center gap-1.5 sm:gap-2 select-none flex-wrap"
               >
             <button
               onClick={() => goToPage(safeCurrentPage - 1)}
               disabled={safeCurrentPage === 1}
               aria-label="صفحه قبل"
-              className="w-9 h-9 flex items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 disabled:opacity-40 disabled:cursor-not-allowed enabled:hover:border-rose-500 enabled:hover:text-rose-600 transition-colors"
+              className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 disabled:opacity-40 disabled:cursor-not-allowed enabled:hover:border-rose-500 enabled:hover:text-rose-600 transition-colors shrink-0"
             >
               <ArrowLeft className="w-4 h-4" />
             </button>
@@ -463,14 +473,14 @@ export const StoreView: React.FC<StoreViewProps> = ({
                 // Render ellipsis only once per gap
                 if (page === safeCurrentPage - 2 && safeCurrentPage - 2 > 2) {
                   return (
-                    <span key={`gap-${page}`} className="text-slate-400 text-sm w-9 text-center">
+                    <span key={`gap-${page}`} className="text-slate-400 text-sm w-8 sm:w-9 text-center shrink-0">
                       …
                     </span>
                   );
                 }
                 if (page === safeCurrentPage + 2 && safeCurrentPage + 2 < totalPages - 1) {
                   return (
-                    <span key={`gap2-${page}`} className="text-slate-400 text-sm w-9 text-center">
+                    <span key={`gap2-${page}`} className="text-slate-400 text-sm w-8 sm:w-9 text-center shrink-0">
                       …
                     </span>
                   );
@@ -483,7 +493,7 @@ export const StoreView: React.FC<StoreViewProps> = ({
                   key={page}
                   onClick={() => goToPage(page)}
                   aria-current={page === safeCurrentPage ? 'page' : undefined}
-                  className={`w-9 h-9 flex items-center justify-center rounded-xl text-sm font-bold transition-colors ${
+                  className={`w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-xl text-sm font-bold transition-colors shrink-0 ${
                     page === safeCurrentPage
                       ? 'bg-rose-600 text-white shadow-md'
                       : 'bg-white text-slate-600 border border-slate-200 hover:border-rose-500 hover:text-rose-600'
@@ -498,7 +508,7 @@ export const StoreView: React.FC<StoreViewProps> = ({
               onClick={() => goToPage(safeCurrentPage + 1)}
               disabled={safeCurrentPage === totalPages}
               aria-label="صفحه بعد"
-              className="w-9 h-9 flex items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 disabled:opacity-40 disabled:cursor-not-allowed enabled:hover:border-rose-500 enabled:hover:text-rose-600 transition-colors"
+              className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 disabled:opacity-40 disabled:cursor-not-allowed enabled:hover:border-rose-500 enabled:hover:text-rose-600 transition-colors shrink-0"
             >
               <ArrowRight className="w-4 h-4" />
             </button>
@@ -512,58 +522,217 @@ export const StoreView: React.FC<StoreViewProps> = ({
           </React.Fragment>
         )}
 
-      {/* Mobile Filter Modal */}
+      {/* Mobile Filter Drawer (professional - opens from the left, tap backdrop to close) */}
       {isMobileFilterOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex justify-end animate-overlay-in">
-          <div className="w-full max-w-xs bg-white h-full p-5 overflow-y-auto space-y-6 animate-slide-in-left">
-            <div className="flex items-center justify-between border-b pb-3">
-              <h3 className="font-bold text-slate-800 text-sm">فیلترهای پیشرفته</h3>
-              <button onClick={() => setIsMobileFilterOpen(false)}>
-                <X className="w-5 h-5 text-slate-500" />
+        <div className="fixed inset-0 z-50 flex justify-end animate-overlay-in">
+          {/* Backdrop - clicking the empty/dimmed area closes the drawer */}
+          <div
+            onClick={() => setIsMobileFilterOpen(false)}
+            className="absolute inset-0 bg-slate-900/60 backdrop-blur-xs"
+            aria-hidden="true"
+          />
+
+          {/* Drawer panel */}
+          <div className="relative w-full max-w-xs bg-white h-full flex flex-col animate-slide-in-left shadow-2xl">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-slate-100 p-5 shrink-0">
+              <div className="flex items-center gap-2">
+                <SlidersHorizontal className="w-4 h-4 text-rose-600" />
+                <h3 className="font-bold text-slate-800 text-sm">فیلترهای پیشرفته</h3>
+                {activeFilterCount > 0 && (
+                  <span className="bg-rose-600 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                    {toPersianDigits(activeFilterCount)}
+                  </span>
+                )}
+              </div>
+              <button
+                onClick={() => setIsMobileFilterOpen(false)}
+                className="p-1.5 rounded-full hover:bg-slate-100 text-slate-500 transition-colors"
+                aria-label="بستن فیلترها"
+              >
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="space-y-4 text-xs font-bold text-slate-700">
-              <div>
-                <div>دسته‌بندی:</div>
-                <div className="space-y-1 mt-2">
+            {/* Scrollable filter sections */}
+            <div className="flex-1 overflow-y-auto p-5 space-y-5 text-xs">
+
+              {/* 1. Product Search Filter */}
+              <div className="space-y-2">
+                <div className="font-bold text-slate-700">جستجوی محصول:</div>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={filterState.searchQuery}
+                    onChange={(e) =>
+                      setFilterState((prev) => ({ ...prev, searchQuery: e.target.value }))
+                    }
+                    placeholder="نام محصول، برند یا دسته..."
+                    className="w-full bg-slate-100 border border-slate-200 rounded-xl py-2.5 pr-9 pl-3 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-rose-500 focus:bg-white transition-colors"
+                  />
+                  <Search className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                </div>
+              </div>
+
+              {/* 2. Category Filter */}
+              <div className="space-y-2 border-t border-slate-100 pt-4">
+                <div className="font-bold text-slate-700">دسته‌بندی محصول:</div>
+                <div className="space-y-1 max-h-44 overflow-y-auto pr-1">
                   <button
-                    onClick={() => {
-                      setFilterState((prev) => ({ ...prev, selectedCategory: '' }));
-                      setIsMobileFilterOpen(false);
-                    }}
-                    className="w-full text-right p-2 rounded-lg bg-slate-100"
+                    onClick={() =>
+                      setFilterState((prev) => ({ ...prev, selectedCategory: '' }))
+                    }
+                    className={`w-full text-right p-2 rounded-xl font-bold transition-colors ${
+                      !filterState.selectedCategory
+                        ? 'bg-rose-50 text-rose-600'
+                        : 'text-slate-600 hover:bg-slate-50'
+                    }`}
                   >
                     همه دسته‌ها
                   </button>
                   {CATEGORIES.map((c) => (
                     <button
                       key={c.id}
-                      onClick={() => {
-                        setFilterState((prev) => ({ ...prev, selectedCategory: c.slug }));
-                        setIsMobileFilterOpen(false);
-                      }}
-                      className="w-full text-right p-2 rounded-lg hover:bg-slate-100"
+                      onClick={() =>
+                        setFilterState((prev) => ({ ...prev, selectedCategory: c.slug }))
+                      }
+                      className={`w-full text-right p-2 rounded-xl font-medium transition-colors flex items-center justify-between ${
+                        filterState.selectedCategory === c.slug
+                          ? 'bg-rose-50 text-rose-600 font-bold'
+                          : 'text-slate-600 hover:bg-slate-50'
+                      }`}
                     >
-                      {c.name}
+                      <span>{c.name}</span>
+                      {filterState.selectedCategory === c.slug && (
+                        <Check className="w-3.5 h-3.5 text-rose-600" />
+                      )}
                     </button>
                   ))}
                 </div>
               </div>
+              {/* 3. Price Filter */}
+              <div className="space-y-2 border-t border-slate-100 pt-4">
+                <div className="font-bold text-slate-700">بر اساس قیمت (تومان):</div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    min={0}
+                    max={3000000}
+                    placeholder="حداقل"
+                    value={filterState.priceRange[0] === 0 ? '' : filterState.priceRange[0]}
+                    onChange={(e) => {
+                      const v = e.target.value === '' ? 0 : Math.min(3000000, Math.max(0, Number(e.target.value)));
+                      setFilterState((prev) => ({ ...prev, priceRange: [v, prev.priceRange[1]] }));
+                    }}
+                    className="w-full bg-slate-100 border border-slate-200 rounded-xl py-2 px-3 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-rose-500 focus:bg-white transition-colors"
+                  />
+                  <span className="text-slate-400 font-bold shrink-0">تا</span>
+                  <input
+                    type="number"
+                    min={0}
+                    max={3000000}
+                    placeholder="حداکثر"
+                    value={filterState.priceRange[1] >= 3000000 ? '' : filterState.priceRange[1]}
+                    onChange={(e) => {
+                      const v = e.target.value === '' ? 3000000 : Math.min(3000000, Math.max(0, Number(e.target.value)));
+                      setFilterState((prev) => ({ ...prev, priceRange: [prev.priceRange[0], v] }));
+                    }}
+                    className="w-full bg-slate-100 border border-slate-200 rounded-xl py-2 px-3 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-rose-500 focus:bg-white transition-colors"
+                  />
+                </div>
+                <div className="flex justify-between text-[10px] text-slate-400 font-medium">
+                  <span>از {formatPrice(filterState.priceRange[0])}</span>
+                  <span>تا {formatPrice(filterState.priceRange[1])}</span>
+                </div>
+              </div>
 
-              <button
-                onClick={() => {
-                  resetFilters();
-                  setIsMobileFilterOpen(false);
-                }}
-                className="w-full bg-rose-600 text-white font-bold py-2.5 rounded-xl"
-              >
-                اعمال و بستن
-              </button>
+              {/* 4. Brand Filter */}
+              <div className="space-y-2 border-t border-slate-100 pt-4">
+                <div className="font-bold text-slate-700 flex items-center justify-between">
+                  <span>بر اساس برند:</span>
+                  {filterState.selectedBrands.length > 0 && (
+                    <button
+                      onClick={() => setFilterState((prev) => ({ ...prev, selectedBrands: [] }))}
+                      className="text-[10px] text-rose-600 font-bold hover:underline"
+                    >
+                      حذف انتخاب‌ها
+                    </button>
+                  )}
+                </div>
+                <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
+                  {BRANDS.map((b) => {
+                    const isSelected = filterState.selectedBrands.includes(b.persianName);
+                    return (
+                      <label
+                        key={b.id}
+                        onClick={() => handleBrandToggle(b.persianName)}
+                        className="flex items-center gap-2 text-xs text-slate-700 cursor-pointer p-1.5 hover:bg-slate-50 rounded-lg transition-colors"
+                      >
+                        <div
+                          className={`w-4 h-4 rounded border flex items-center justify-center transition-colors shrink-0 ${
+                            isSelected ? 'bg-rose-600 border-rose-600 text-white' : 'border-slate-300'
+                          }`}
+                        >
+                          {isSelected && <Check className="w-3 h-3" />}
+                        </div>
+                        <span>{b.persianName}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* 5. Availability toggles */}
+              <div className="space-y-3 border-t border-slate-100 pt-4 text-xs font-bold text-slate-700">
+                <label className="flex items-center justify-between cursor-pointer">
+                  <span>فقط کالاهای موجود</span>
+                  <input
+                    type="checkbox"
+                    checked={filterState.onlyInStock}
+                    onChange={(e) =>
+                      setFilterState((prev) => ({ ...prev, onlyInStock: e.target.checked }))
+                    }
+                    className="accent-rose-600 w-4 h-4"
+                  />
+                </label>
+                <label className="flex items-center justify-between cursor-pointer">
+                  <span>فقط کالاهای تخفیف‌دار</span>
+                  <input
+                    type="checkbox"
+                    checked={filterState.onlyDiscounted}
+                    onChange={(e) =>
+                      setFilterState((prev) => ({ ...prev, onlyDiscounted: e.target.checked }))
+                    }
+                    className="accent-rose-600 w-4 h-4"
+                  />
+                </label>
+              </div>
+            </div>
+
+            {/* Sticky footer with action buttons */}
+            <div className="shrink-0 border-t border-slate-100 p-4 bg-white">
+              <div className="flex gap-2">
+                <button
+                  onClick={resetFilters}
+                  disabled={activeFilterCount === 0}
+                  className="flex-1 border border-slate-200 text-slate-700 font-bold py-2.5 rounded-xl disabled:opacity-40 enabled:hover:bg-slate-50 transition-colors"
+                >
+                  حذف فیلترها
+                </button>
+                <button
+                  onClick={() => setIsMobileFilterOpen(false)}
+                  className="flex-[2] bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 rounded-xl transition-colors"
+                >
+                  اعمال و نمایش {toPersianDigits(filteredProducts.length)} محصول
+                </button>
+              </div>
             </div>
           </div>
         </div>
       )}
+
+
+
 
     </div>
   );
