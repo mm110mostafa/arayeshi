@@ -84,6 +84,78 @@ export const Header: React.FC<HeaderProps> = ({
 
   const quickSearchTags = ['رژ لب کالیستا', 'سرم هیالورونیک', 'کرم پودر مای', 'ضد آفتاب سینره', 'روغن آرگان', 'ریمل'];
 
+  // Shared live-search suggestions overlay (rendered for both desktop & mobile inputs)
+  const liveSearchOverlay = isSearchFocused && (
+    <div className="absolute top-full right-0 left-0 mt-2 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-50 p-4 animate-dropdown-in">
+      {searchQuery.trim() ? (
+        <div>
+          <div className="text-xs font-semibold text-slate-400 mb-2">نتایج پیشنهادی:</div>
+          {searchResults.length > 0 ? (
+            <div className="space-y-2">
+              {searchResults.map((product) => (
+                <div
+                  key={product.id}
+                  onClick={() => {
+                    onSelectProduct(product);
+                    setIsSearchFocused(false);
+                  }}
+                  className="flex items-center gap-3 p-2 hover:bg-rose-50 rounded-xl cursor-pointer transition-colors"
+                >
+                  <img
+                    src={product.image}
+                    alt={product.title}
+                    className="w-10 h-10 object-cover rounded-lg"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <h4 className="text-xs font-bold text-slate-800 truncate">{product.title}</h4>
+                    <div className="text-[11px] text-slate-400">{product.brand} • {product.category}</div>
+                  </div>
+                  <div className="text-xs font-bold text-rose-600">
+                    {formatPrice(product.price)}
+                  </div>
+                </div>
+              ))}
+              <button
+                onClick={() => {
+                  setActiveTab('store');
+                  setIsSearchFocused(false);
+                }}
+                className="w-full text-center py-2 text-xs text-rose-600 font-bold hover:bg-rose-50 rounded-lg mt-2"
+              >
+                مشاهده همه نتایج جستجو ({toPersianDigits(searchResults.length)})
+              </button>
+            </div>
+          ) : (
+            <div className="py-6 text-center text-xs text-slate-400">
+              محصولی با این مشخصات یافت نشد.
+            </div>
+          )}
+        </div>
+      ) : (
+        <div>
+          <div className="text-xs font-bold text-slate-500 mb-2 flex items-center gap-1.5">
+            <Flame className="w-4 h-4 text-rose-500" />
+            جستجوهای پرطرفدار
+          </div>
+          <div className="flex flex-wrap gap-2 mb-3">
+            {quickSearchTags.map((tag) => (
+              <button
+                key={tag}
+                onClick={() => {
+                  setSearchQuery(tag);
+                  setActiveTab('store');
+                }}
+                className="text-xs bg-slate-100 hover:bg-rose-50 text-slate-700 hover:text-rose-600 px-3 py-1.5 rounded-xl transition-colors"
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <header className="sticky top-0 z-40 bg-white shadow-sm font-vazir">
       {/* Top Banner Ribbon - Digikala style */}
@@ -124,8 +196,8 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
         </div>
 
-        {/* Center: Digikala style Live Search Input */}
-        <div className="flex-1 max-w-2xl relative hidden sm:block">
+        {/* Center: Digikala style Live Search Input (desktop only - lg and up) */}
+        <div className="flex-1 max-w-2xl relative hidden lg:block">
           <div className="relative flex items-center">
             <input
               type="text"
@@ -147,77 +219,8 @@ export const Header: React.FC<HeaderProps> = ({
             )}
           </div>
 
-          {/* Live Search Auto-complete Overlay */}
-          {isSearchFocused && (
-            <div className="absolute top-full right-0 left-0 mt-2 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-50 p-4 animate-dropdown-in">
-              {searchQuery.trim() ? (
-                <div>
-                  <div className="text-xs font-semibold text-slate-400 mb-2">نتایج پیشنهادی:</div>
-                  {searchResults.length > 0 ? (
-                    <div className="space-y-2">
-                      {searchResults.map((product) => (
-                        <div
-                          key={product.id}
-                          onClick={() => {
-                            onSelectProduct(product);
-                            setIsSearchFocused(false);
-                          }}
-                          className="flex items-center gap-3 p-2 hover:bg-rose-50 rounded-xl cursor-pointer transition-colors"
-                        >
-                          <img
-                            src={product.image}
-                            alt={product.title}
-                            className="w-10 h-10 object-cover rounded-lg"
-                          />
-                          <div className="flex-1 min-w-0">
-                            <h4 className="text-xs font-bold text-slate-800 truncate">{product.title}</h4>
-                            <div className="text-[11px] text-slate-400">{product.brand} • {product.category}</div>
-                          </div>
-                          <div className="text-xs font-bold text-rose-600">
-                            {formatPrice(product.price)}
-                          </div>
-                        </div>
-                      ))}
-                      <button
-                        onClick={() => {
-                          setActiveTab('store');
-                          setIsSearchFocused(false);
-                        }}
-                        className="w-full text-center py-2 text-xs text-rose-600 font-bold hover:bg-rose-50 rounded-lg mt-2"
-                      >
-                        مشاهده همه نتایج جستجو ({searchResults.length})
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="py-6 text-center text-xs text-slate-400">
-                      محصولی با این مشخصات یافت نشد.
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div>
-                  <div className="text-xs font-bold text-slate-500 mb-2 flex items-center gap-1.5">
-                    <Flame className="w-4 h-4 text-rose-500" />
-                    جستجوهای پرطرفدار
-                  </div>
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    {quickSearchTags.map((tag) => (
-                      <button
-                        key={tag}
-                        onClick={() => {
-                          setSearchQuery(tag);
-                          setActiveTab('store');
-                        }}
-                        className="text-xs bg-slate-100 hover:bg-rose-50 text-slate-700 hover:text-rose-600 px-3 py-1.5 rounded-xl transition-colors"
-                      >
-                        {tag}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
+          {/* Live Search Auto-complete Overlay (shared with mobile input) */}
+          {liveSearchOverlay}
         </div>
 
         {/* Left side: Wishlist, User Profile, Cart */}
@@ -317,34 +320,59 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      {/* Mobile Search Bar Row */}
-      <div className="sm:hidden px-4 pb-3">
-        <div className="relative flex items-center">
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onFocus={() => {
-              setIsSearchFocused(true);
-            }}
-            onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
-            placeholder="جستجوی محصول یا برند در خوش لبخند..."
-            className="w-full bg-slate-100 border border-slate-200 rounded-xl py-2 pr-10 pl-4 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-rose-500"
-          />
-          <Search className="w-4 h-4 text-slate-400 absolute right-3 pointer-events-none" />
+      {/* Mobile & Tablet Search + Categories Row (side by side, live suggestions) */}
+      <div className="lg:hidden px-4 pb-3">
+        <div className="flex items-center gap-2">
+          {/* Categories button - opens the same category panel (sits to the right of the search) */}
+          <button
+            onClick={() => setIsMegaMenuOpen(!isMegaMenuOpen)}
+            className="shrink-0 flex items-center gap-1.5 bg-white border border-slate-200 hover:border-rose-300 hover:bg-rose-50/50 rounded-xl px-3 py-2 text-[11px] sm:text-xs font-bold text-slate-700 whitespace-nowrap transition-all"
+          >
+            <Grid className="w-4 h-4 text-rose-600" />
+            <span className="hidden sm:inline">دسته‌بندی کالاها</span>
+            <span className="sm:hidden">دسته‌بندی</span>
+            <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${isMegaMenuOpen ? 'rotate-180' : ''}`} />
+          </button>
+
+          {/* Live search input (narrower width, shares the same instant suggestions overlay) */}
+          <div className="flex-1 relative">
+            <div className="relative flex items-center">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => setIsSearchFocused(true)}
+                onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
+                placeholder="جستجوی محصول یا برند..."
+                className="w-full bg-slate-100 border border-slate-200 rounded-xl py-2 pr-9 pl-8 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-rose-500 focus:bg-white transition-colors"
+              />
+              <Search className="w-4 h-4 text-slate-400 absolute right-3 pointer-events-none" />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute left-2.5 text-slate-400 hover:text-slate-600 text-[10px] bg-slate-200 hover:bg-slate-300 rounded-full w-4 h-4 flex items-center justify-center transition-colors"
+                  aria-label="پاک کردن جستجو"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+            {/* Live Search Auto-complete Overlay (shared with desktop input) */}
+            {liveSearchOverlay}
+          </div>
         </div>
       </div>
 
-      {/* Navigation Bar & Mega Menu Strip */}
-      <div className="border-t border-slate-100 bg-white">
-        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between h-12 text-xs sm:text-sm font-medium relative">
+      {/* Navigation Bar & Mega Menu Strip (hidden on mobile/tablet - category button lives in the search row there) */}
+      <div className={`border-t border-slate-100 bg-white ${isMegaMenuOpen ? '' : 'hidden lg:block'}`}>
+        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between lg:h-12 text-xs sm:text-sm font-medium relative">
           
-          {/* Mega Menu Toggle */}
-          <div className="relative group">
+          {/* Mega Menu Toggle (desktop only - mobile uses the button in the search row) */}
+          <div className="relative group w-full lg:w-auto">
             <button
               onClick={() => setIsMegaMenuOpen(!isMegaMenuOpen)}
               onMouseEnter={() => setIsMegaMenuOpen(true)}
-              className="flex items-center gap-2 text-slate-800 hover:text-rose-600 font-bold py-3 border-b-2 border-transparent hover:border-rose-600 transition-colors"
+              className="hidden lg:flex items-center gap-2 text-slate-800 hover:text-rose-600 font-bold py-3 border-b-2 border-transparent hover:border-rose-600 transition-colors"
             >
               <Grid className="w-4 h-4 text-rose-600" />
               <span>دسته‌بندی کالاها</span>

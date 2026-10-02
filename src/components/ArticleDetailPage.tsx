@@ -66,8 +66,8 @@ export const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({
     );
   };
 
-  // Most viewed articles: all except current, ordered by readTime length as popularity proxy
-  const mostViewed = ARTICLES.filter((a) => a.id !== article.id);
+  // Most viewed articles: all except current, ordered by readTime length as popularity proxy (limited to top 4)
+  const mostViewed = ARTICLES.filter((a) => a.id !== article.id).slice(0, 4);
 
   const filtered = query.trim()
     ? mostViewed.filter(
